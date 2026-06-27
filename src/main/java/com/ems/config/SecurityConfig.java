@@ -86,10 +86,10 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(
-            List.of(
-                "http://localhost:3000",
-                "https://*.github.io"
-            )
+         List.of(
+        "http://localhost:3000",
+        "https://employee-management-system-sbp5.vercel.app"
+        )
         );
 
         config.setAllowedMethods(
