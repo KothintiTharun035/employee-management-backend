@@ -89,6 +89,7 @@ public class SecurityConfig {
          List.of(
         "http://localhost:3000",
         "https://employee-management-system-sbp5.vercel.app"
+        "https://employee-management-system-sandy-iota.vercel.app"
         )
         );
 
