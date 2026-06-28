@@ -1,7 +1,9 @@
 package com.ems.controller;
 
 import com.ems.config.JwtUtil;
-import com.ems.dto.AuthDTO.*;
+import com.ems.dto.AuthDTO.LoginRequest;
+import com.ems.dto.AuthDTO.LoginResponse;
+import com.ems.dto.AuthDTO.RegisterRequest;
 import com.ems.model.User;
 import com.ems.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,29 +25,52 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        try {
-            authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-            );
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(401).body(
-                LoginResponse.builder().message("Invalid credentials").build()
-            );
-        }
+public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-        final String token = jwtUtil.generateToken(userDetails);
+    System.out.println("===== LOGIN REQUEST =====");
+    System.out.println("Username: " + request.getUsername());
+    System.out.println("Password: " + request.getPassword());
 
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+    User user = userRepository.findByUsername(request.getUsername()).orElse(null);
 
-        return ResponseEntity.ok(LoginResponse.builder()
-                .token(token)
-                .username(user.getUsername())
-                .role(user.getRole().name())
-                .message("Login successful")
-                .build());
+    System.out.println("User found: " + (user != null));
+
+    if (user != null) {
+        System.out.println("DB Username: " + user.getUsername());
+        System.out.println("Password matches: " +
+                passwordEncoder.matches(request.getPassword(), user.getPassword()));
     }
+
+    try {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword())
+        );
+
+        System.out.println("Authentication SUCCESS");
+
+    } catch (Exception e) {
+        System.out.println("Authentication FAILED");
+        e.printStackTrace();
+        return ResponseEntity.status(401)
+                .body(LoginResponse.builder().message("Invalid credentials").build());
+    }
+
+    UserDetails userDetails =
+            userDetailsService.loadUserByUsername(request.getUsername());
+
+    String token = jwtUtil.generateToken(userDetails);
+
+    return ResponseEntity.ok(
+            LoginResponse.builder()
+                    .token(token)
+                    .username(user.getUsername())
+                    .role(user.getRole().name())
+                    .message("Login successful")
+                    .build()
+    );
+}
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {

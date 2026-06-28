@@ -15,17 +15,17 @@ public class EmployeeManagementSystemApplication {
         SpringApplication.run(EmployeeManagementSystemApplication.class, args);
     }
 
-    // Seed default admin user on startup
     @Bean
-    public CommandLineRunner initData(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner initData(UserRepository userRepository,
+                                      PasswordEncoder passwordEncoder) {
         return args -> {
-            if (!userRepository.existsByUsername("admin")) {
-                userRepository.save(User.builder()
-                        .username("admin")
-                        .password(passwordEncoder.encode("admin123"))
-                        .role(User.Role.ROLE_ADMIN)
-                        .build());
-                System.out.println("✅ Default admin user created: admin / admin123");
+
+            User user = userRepository.findByUsername("admin").orElse(null);
+
+            if (user != null) {
+                System.out.println("Username: " + user.getUsername());
+                System.out.println("Password matches admin123: "
+                        + passwordEncoder.matches("admin123", user.getPassword()));
             }
         };
     }
