@@ -88,8 +88,7 @@ public class SecurityConfig {
 
         config.setAllowedOrigins(
          List.of(
-        "http://localhost:3000",
-        "https://employee-management-system-sbp5.vercel.app",   
+        "http://localhost:3000",  
         "https://employee-management-system-sandy-iota.vercel.app"
         )
         );
