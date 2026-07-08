@@ -1,16 +1,17 @@
 package com.ems.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 
-@Entity
-@Table(
-    name = "attendance",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"employee_id", "attendance_date"})
-    }
+@Document(collection = "attendance")
+@CompoundIndex(
+    name = "employee_date_unique",
+    def = "{'employeeId': 1, 'attendanceDate': 1}",
+    unique = true
 )
 @Data
 @NoArgsConstructor
@@ -19,16 +20,12 @@ import java.time.LocalDate;
 public class Attendance {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(name = "employee_id")
     private Long employeeId;
 
-    @Column(name = "attendance_date")
     private LocalDate attendanceDate;
 
-    @Enumerated(EnumType.STRING)
     private AttendanceStatus status;
 
     public enum AttendanceStatus {

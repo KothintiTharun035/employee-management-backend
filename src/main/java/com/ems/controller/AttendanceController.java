@@ -10,7 +10,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/attendance")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class AttendanceController {
 
     private final AttendanceRepository attendanceRepository;
@@ -21,19 +20,22 @@ public class AttendanceController {
     }
 
     @PostMapping
-    public Attendance markAttendance(@RequestBody Attendance attendance) {
+    public Attendance markAttendance(
+            @RequestBody Attendance attendance
+    ) {
 
-    Attendance existing = attendanceRepository.findAttendance(
-                    attendance.getEmployeeId(),
-                    attendance.getAttendanceDate()
-            )
-            .orElse(null);
+        Attendance existing = attendanceRepository
+                .findByEmployeeIdAndAttendanceDate(
+                        attendance.getEmployeeId(),
+                        attendance.getAttendanceDate()
+                )
+                .orElse(null);
 
-    if (existing != null) {
-        existing.setStatus(attendance.getStatus());
-        return attendanceRepository.save(existing);
+        if (existing != null) {
+            existing.setStatus(attendance.getStatus());
+            return attendanceRepository.save(existing);
+        }
+
+        return attendanceRepository.save(attendance);
     }
-
-    return attendanceRepository.save(attendance);
-}
 }

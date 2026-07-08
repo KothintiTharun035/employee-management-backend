@@ -1,10 +1,11 @@
 package com.ems.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "users")
+@Document(collection = "users")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,20 +13,19 @@ import lombok.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(unique = true, nullable = false)
+    @Indexed(unique = true)
     private String username;
 
-    @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
     @Builder.Default
     private Role role = Role.ROLE_USER;
 
     public enum Role {
-        ROLE_ADMIN, ROLE_USER, ROLE_MANAGER
+        ROLE_ADMIN,
+        ROLE_USER,
+        ROLE_MANAGER
     }
 }

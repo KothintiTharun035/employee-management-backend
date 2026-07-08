@@ -1,13 +1,15 @@
 package com.ems.model;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "employees")
+@Document(collection = "employees")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,24 +17,20 @@ import java.time.LocalDateTime;
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "First name is required")
-    @Column(name = "first_name", nullable = false)
     private String firstName;
 
     @NotBlank(message = "Last name is required")
-    @Column(name = "last_name", nullable = false)
     private String lastName;
 
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email is required")
-    @Column(unique = true, nullable = false)
+    @Indexed(unique = true)
     private String email;
 
     @NotBlank(message = "Phone number is required")
-    @Column(name = "phone_number")
     private String phoneNumber;
 
     @NotBlank(message = "Department is required")
@@ -44,40 +42,24 @@ public class Employee {
     @DecimalMin(value = "0.0", message = "Salary must be positive")
     private Double salary;
 
-    @Column(name = "date_of_joining")
     private LocalDate dateOfJoining;
 
-    @Enumerated(EnumType.STRING)
     @Builder.Default
     private EmployeeStatus status = EmployeeStatus.ACTIVE;
 
     private String address;
 
-    @Column(name = "profile_image")
     private String profileImage;
 
-    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
-
-    public enum EmployeeStatus {
-        ACTIVE, INACTIVE, ON_LEAVE
-    }
-
-    @Column(name = "gender")
     private String gender;
 
+    public enum EmployeeStatus {
+        ACTIVE,
+        INACTIVE,
+        ON_LEAVE
+    }
 }
